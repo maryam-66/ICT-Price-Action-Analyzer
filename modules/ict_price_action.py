@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def fetch_data(symbol, timeframe="1d", start_date="2024-01-01", end_date="2024-01-01", limit=500):
+def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-01-01", limit=500):
     """
     دریافت داده‌های تاریخی برای نماد انتخابی با استفاده از yfinance
     :param symbol: نماد ارز دیجیتال (مثلاً BTC-USD)
@@ -47,9 +47,15 @@ def fetch_data(symbol, timeframe="1d", start_date="2024-01-01", end_date="2024-0
 
 def detect_bos(data, window=3):
     bos_signals = []
+
+    # تبدیل مقادیر به عددی و حذف مقادیر NaN
+    data['High'] = pd.to_numeric(data['High'], errors='coerce')
+    data['Low'] = pd.to_numeric(data['Low'], errors='coerce')
+    data = data.dropna(subset=['High', 'Low'])  # حذف ردیف‌هایی که داده‌های NaN دارند
+
     for i in range(window, len(data) - window):
-        prev_highs = data.iloc[i - window:i]['High']  # تغییر به iloc و انتخاب ستون صحیح
-        prev_lows = data.iloc[i - window:i]['Low']   # تغییر به iloc و انتخاب ستون صحیح
+        prev_highs = data.iloc[i - window:i]['High']  # انتخاب داده‌های قبلی برای High
+        prev_lows = data.iloc[i - window:i]['Low']   # انتخاب داده‌های قبلی برای Low
 
         # شناسایی BOS به سمت بالا
         if data.iloc[i]['High'] > max(prev_highs):
