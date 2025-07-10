@@ -25,17 +25,19 @@ def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-0
         # دریافت داده‌ها از yfinance
         data = yf.download(tickers=symbol, start=start_date, end=end_date, interval=interval)
 
-        # چاپ داده‌ها برای بررسی ستون‌ها
+        # بررسی ستون‌ها برای دیباگ
         print(f"Fetched data for {symbol}:")
         print(data.head())  # چاپ اولین ۵ سطر برای بررسی داده‌ها
         
         if data.empty:
             raise ValueError(f"No data fetched for symbol: {symbol} with timeframe: {timeframe} from {start_date} to {end_date}")
         
+        # تبدیل ایندکس تاریخ به ستون و تغییر نام
+        data.reset_index(inplace=True)
+        data.rename(columns={"Date": "Date"}, inplace=True)  # اطمینان از وجود ستون 'Date'
+        
         # محدود کردن تعداد داده‌ها
         data = data.tail(limit)
-        data.reset_index(inplace=True)
-        data.rename(columns={"index": "Date"}, inplace=True)
         
         return data
     
@@ -46,22 +48,22 @@ def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-0
 def detect_bos(data, window=3):
     bos_signals = []
     for i in range(window, len(data) - window):
-        prev_highs = data['High'][i - window:i]
-        prev_lows = data['Low'][i - window:i]
+        prev_highs = data.iloc[i - window:i]['High']  # تغییر به iloc و انتخاب ستون صحیح
+        prev_lows = data.iloc[i - window:i]['Low']   # تغییر به iloc و انتخاب ستون صحیح
 
         # شناسایی BOS به سمت بالا
-        if data['High'][i] > max(prev_highs):
+        if data.iloc[i]['High'] > max(prev_highs):
             bos_signals.append({
-                "time": str(data['Date'][i]),
-                "price": data['High'][i],
+                "time": str(data.iloc[i]['Date']),
+                "price": data.iloc[i]['High'],
                 "type": "BOS-UP"
             })
 
         # شناسایی BOS به سمت پایین
-        if data['Low'][i] < min(prev_lows):
+        if data.iloc[i]['Low'] < min(prev_lows):
             bos_signals.append({
-                "time": str(data['Date'][i]),
-                "price": data['Low'][i],
+                "time": str(data.iloc[i]['Date']),
+                "price": data.iloc[i]['Low'],
                 "type": "BOS-DOWN"
             })
 
@@ -70,13 +72,13 @@ def detect_bos(data, window=3):
 def detect_fvg(data):
     fvg_zones = []
     for i in range(2, len(data)):
-        body1 = [data['Low'][i - 2], data['High'][i - 2]]
-        body3 = [data['Low'][i], data['High'][i]]
+        body1 = [data.iloc[i - 2]['Low'], data.iloc[i - 2]['High']]
+        body3 = [data.iloc[i]['Low'], data.iloc[i]['High']]
 
         # شناسایی FVG رو به بالا
         if body1[1] < body3[0]:  # Gap up
             fvg_zones.append({
-                "time": str(data['Date'][i]),
+                "time": str(data.iloc[i]['Date']),
                 "low": body1[1],
                 "high": body3[0],
                 "type": "FVG-UP"
@@ -85,7 +87,7 @@ def detect_fvg(data):
         # شناسایی FVG رو به پایین
         if body3[1] < body1[0]:  # Gap down
             fvg_zones.append({
-                "time": str(data['Date'][i]),
+                "time": str(data.iloc[i]['Date']),
                 "low": body3[1],
                 "high": body1[0],
                 "type": "FVG-DOWN"
@@ -131,4 +133,3 @@ def analyze_ict_price_action(symbol, tf="1h", start="2023-01-01", end="2024-01-0
     chart = plot_ict_chart(data, bos, fvg)
 
     return bos, fvg, chart
-
