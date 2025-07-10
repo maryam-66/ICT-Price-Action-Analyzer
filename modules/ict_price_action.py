@@ -122,7 +122,7 @@ def plot_ict_chart(data, bos, fvg):
 
     return fig
 
-def analyze_ict_price_action(symbol, tf="1h", start="2023-01-01", end="2024-01-01"):
+def analyze_ict_price_action(symbol, tf="4h", start="2025-01-01", end="2025-07-11"):
     # دریافت داده‌ها
     data = fetch_data(symbol, timeframe=tf, start_date=start, end_date=end)
 
