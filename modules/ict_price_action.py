@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-01-01", limit=500):
+def fetch_data(symbol, timeframe="1d", start_date="2024-01-01", end_date="2024-01-01", limit=500):
     """
     دریافت داده‌های تاریخی برای نماد انتخابی با استفاده از yfinance
     :param symbol: نماد ارز دیجیتال (مثلاً BTC-USD)
