@@ -36,6 +36,12 @@ def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-0
         data.reset_index(inplace=True)
         data.rename(columns={"Date": "Date"}, inplace=True)  # اطمینان از وجود ستون 'Date'
         
+        # تبدیل ستون‌ها به نوع عددی (float) و حذف مقادیر NaN
+        data['High'] = pd.to_numeric(data['High'], errors='coerce')
+        data['Low'] = pd.to_numeric(data['Low'], errors='coerce')
+        data['Close'] = pd.to_numeric(data['Close'], errors='coerce')
+        data = data.dropna(subset=['High', 'Low', 'Close'])  # حذف ردیف‌هایی که داده‌های NaN دارند
+        
         # محدود کردن تعداد داده‌ها
         data = data.tail(limit)
         
@@ -48,7 +54,7 @@ def fetch_data(symbol, timeframe="1h", start_date="2023-01-01", end_date="2024-0
 def detect_bos(data, window=3):
     bos_signals = []
 
-    # تبدیل مقادیر به عددی و حذف مقادیر NaN
+    # اطمینان از اینکه مقادیر High و Low به عددی تبدیل شده‌اند
     data['High'] = pd.to_numeric(data['High'], errors='coerce')
     data['Low'] = pd.to_numeric(data['Low'], errors='coerce')
     data = data.dropna(subset=['High', 'Low'])  # حذف ردیف‌هایی که داده‌های NaN دارند
