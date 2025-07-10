@@ -44,7 +44,7 @@ if run_analysis:
             end=end_date.strftime("%Y-%m-%d")
         )
 
-        # نمایش سیگنال‌های BOS (Break of Structure)
+        # نمایش BOS
         st.markdown("### 🔁 Break of Structure (BOS) Signals")
         if bos_list:
             for bos in bos_list[-5:]:
@@ -52,7 +52,7 @@ if run_analysis:
         else:
             st.info("No BOS signals found.")
 
-        # نمایش نواحی FVG (Fair Value Gap)
+        # نمایش FVG
         st.markdown("### 📉 Fair Value Gap (FVG) Zones")
         if fvg_list:
             for fvg in fvg_list[-5:]:
@@ -60,11 +60,10 @@ if run_analysis:
         else:
             st.info("No FVG zones found.")
 
-        # نمایش نمودار تحلیل
+        # نمایش نمودار
         st.markdown("### 📊 Chart")
         st.pyplot(chart)
 
     except Exception as e:
-        # در صورت بروز خطا، پیام خطا نمایش داده می‌شود
         st.error(f"❌ Error during analysis: {e}")
         st.code(traceback.format_exc())
