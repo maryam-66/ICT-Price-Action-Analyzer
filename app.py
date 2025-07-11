@@ -1,5 +1,4 @@
 import streamlit as st
-import traceback
 from datetime import datetime
 from modules.ict_price_action import analyze_ict_price_action
 
@@ -25,7 +24,7 @@ timeframes = list(tf_map.keys())
 selected_tf = st.sidebar.selectbox("⏰ Select Timeframe", timeframes, index=0)
 
 # انتخاب بازه زمانی تحلیل
-start_date = st.sidebar.date_input("📅 From Date", datetime(2023, 1, 1))
+start_date = st.sidebar.date_input("📅 From Date", datetime(2025, 1, 1))
 end_date = st.sidebar.date_input("📅 To Date", datetime.now())
 
 # دکمه اجرا
@@ -66,4 +65,3 @@ if run_analysis:
 
     except Exception as e:
         st.error(f"❌ Error during analysis: {e}")
-        st.code(traceback.format_exc())
