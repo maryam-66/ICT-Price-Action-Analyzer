@@ -12,3 +12,7 @@ python-bidi
 plotly
 xlsxwriter
 requests
+pycoingecko
+pandas
+matplotlib
+streamlit
